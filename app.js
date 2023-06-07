@@ -1,6 +1,21 @@
+require("dotenv").config();
+
+const dotenv = require("dotenv");
+const result = dotenv.config();
+
+if (result.error) {
+  console.error("Error loading .env file:", result.error);
+  return res.status(500).send("Error loading .env file");
+}
+
+const appKey = process.env.APP_KEY;
+const express = require("express");
+const app = express();
+const scriptUrl = `https://dapi.kakao.com/v2/maps/sdk.js?appkey=${appKey}&libraries=services`;
+
 app.get("/", (req, res) => {
-  const appKey = process.env.appKey; // 환경변수에서 APP_KEY를 가져옴
   const html = `
+
 <!DOCTYPE html>
 <html>
   <head>
@@ -98,8 +113,7 @@ app.get("/", (req, res) => {
 
     <script
       type="text/javascript"
-      src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=${appkey}&libraries=services"
-    ></script>
+      src="${scriptUrl}"></script>
     <script>
       var category1 = ["SC4", "SW8"]; // 학교, 지하철 카테고리
       var category2 = ["MT1", "CT1", "HP8", "PO3"]; // 상업, 문화, 병원, 공공 카테고리
@@ -263,4 +277,9 @@ app.get("/", (req, res) => {
 </html>
 `;
   res.send(html); // 동적으로 생성된 HTML 파일을 응답으로 보냄
+});
+
+const port = 3000; //사용할 포트 번호
+app.listen(port, () => {
+  console.log("Server is running on port ${port}");
 });
